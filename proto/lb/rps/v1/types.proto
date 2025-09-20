@@ -1,20 +1,61 @@
 syntax = "proto3";
 package lb.rps.v1;
 
-option go_package = "challenge/x/rps/types"; // store the generated files here
+option go_package = "challenge/x/rps/types;types"; // store the generated files here
 
 import "cosmos_proto/cosmos.proto";
 
 // Student defines the name, age and id object
 message Student {
   string name = 1;
-  string id = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; 
+  string id = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   uint64 age = 3;
   int64 created_at = 4;
 }
 
+// MsgCreateStudent defines a request to create a student.
 message MsgCreateStudent {
   string creator = 1;
   string name = 2;
   uint64 age = 3;
+}
+
+// MsgDeleteStudent defines a request to delete a student.
+message MsgDeleteStudent {
+  string creator = 1;
+  string id = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgCreateStudentResponse is the response after creating a student.
+message MsgCreateStudentResponse {}
+
+// MsgDeleteStudentResponse is the response after deleting a student.
+message MsgDeleteStudentResponse {}
+
+// Msg defines the student transaction service.
+service Msg {
+  // CreateStudent creates a new student.
+  rpc CreateStudent(MsgCreateStudent) returns (MsgCreateStudentResponse);
+  // DeleteStudent removes a student by ID.
+  rpc DeleteStudent(MsgDeleteStudent) returns (MsgDeleteStudentResponse);
+}
+
+// QueryGetStudentRequest requests a student by ID.
+message QueryGetStudentRequest { string id = 1; }
+
+// QueryGetStudentResponse returns a single student.
+message QueryGetStudentResponse { Student student = 1; }
+
+// QueryGetStudentsRequest requests all students.
+message QueryGetStudentsRequest {}
+
+// QueryGetStudentsResponse returns all students.
+message QueryGetStudentsResponse { repeated Student students = 1; }
+
+// Query defines the student query service.
+service Query {
+  // GetStudent returns a student by ID.
+  rpc GetStudent(QueryGetStudentRequest) returns (QueryGetStudentResponse);
+  // GetStudents returns all students.
+  rpc GetStudents(QueryGetStudentsRequest) returns (QueryGetStudentsResponse);
 }

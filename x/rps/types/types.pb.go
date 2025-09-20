@@ -4,9 +4,14 @@
 package types
 
 import (
+	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -92,6 +97,7 @@ func (m *Student) GetCreatedAt() int64 {
 	return 0
 }
 
+// MsgCreateStudent defines a request to create a student.
 type MsgCreateStudent struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -152,32 +158,584 @@ func (m *MsgCreateStudent) GetAge() uint64 {
 	return 0
 }
 
+// MsgDeleteStudent defines a request to delete a student.
+type MsgDeleteStudent struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Id      string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *MsgDeleteStudent) Reset()         { *m = MsgDeleteStudent{} }
+func (m *MsgDeleteStudent) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteStudent) ProtoMessage()    {}
+func (*MsgDeleteStudent) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{2}
+}
+func (m *MsgDeleteStudent) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteStudent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteStudent.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteStudent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteStudent.Merge(m, src)
+}
+func (m *MsgDeleteStudent) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteStudent) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteStudent.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteStudent proto.InternalMessageInfo
+
+func (m *MsgDeleteStudent) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgDeleteStudent) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+// MsgCreateStudentResponse is the response after creating a student.
+type MsgCreateStudentResponse struct {
+}
+
+func (m *MsgCreateStudentResponse) Reset()         { *m = MsgCreateStudentResponse{} }
+func (m *MsgCreateStudentResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateStudentResponse) ProtoMessage()    {}
+func (*MsgCreateStudentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{3}
+}
+func (m *MsgCreateStudentResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateStudentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateStudentResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateStudentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateStudentResponse.Merge(m, src)
+}
+func (m *MsgCreateStudentResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateStudentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateStudentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateStudentResponse proto.InternalMessageInfo
+
+// MsgDeleteStudentResponse is the response after deleting a student.
+type MsgDeleteStudentResponse struct {
+}
+
+func (m *MsgDeleteStudentResponse) Reset()         { *m = MsgDeleteStudentResponse{} }
+func (m *MsgDeleteStudentResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteStudentResponse) ProtoMessage()    {}
+func (*MsgDeleteStudentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{4}
+}
+func (m *MsgDeleteStudentResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteStudentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteStudentResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteStudentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteStudentResponse.Merge(m, src)
+}
+func (m *MsgDeleteStudentResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteStudentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteStudentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteStudentResponse proto.InternalMessageInfo
+
+// QueryGetStudentRequest requests a student by ID.
+type QueryGetStudentRequest struct {
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *QueryGetStudentRequest) Reset()         { *m = QueryGetStudentRequest{} }
+func (m *QueryGetStudentRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetStudentRequest) ProtoMessage()    {}
+func (*QueryGetStudentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{5}
+}
+func (m *QueryGetStudentRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetStudentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetStudentRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetStudentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetStudentRequest.Merge(m, src)
+}
+func (m *QueryGetStudentRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetStudentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetStudentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetStudentRequest proto.InternalMessageInfo
+
+func (m *QueryGetStudentRequest) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+// QueryGetStudentResponse returns a single student.
+type QueryGetStudentResponse struct {
+	Student *Student `protobuf:"bytes,1,opt,name=student,proto3" json:"student,omitempty"`
+}
+
+func (m *QueryGetStudentResponse) Reset()         { *m = QueryGetStudentResponse{} }
+func (m *QueryGetStudentResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetStudentResponse) ProtoMessage()    {}
+func (*QueryGetStudentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{6}
+}
+func (m *QueryGetStudentResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetStudentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetStudentResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetStudentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetStudentResponse.Merge(m, src)
+}
+func (m *QueryGetStudentResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetStudentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetStudentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetStudentResponse proto.InternalMessageInfo
+
+func (m *QueryGetStudentResponse) GetStudent() *Student {
+	if m != nil {
+		return m.Student
+	}
+	return nil
+}
+
+// QueryGetStudentsRequest requests all students.
+type QueryGetStudentsRequest struct {
+}
+
+func (m *QueryGetStudentsRequest) Reset()         { *m = QueryGetStudentsRequest{} }
+func (m *QueryGetStudentsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetStudentsRequest) ProtoMessage()    {}
+func (*QueryGetStudentsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{7}
+}
+func (m *QueryGetStudentsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetStudentsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetStudentsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetStudentsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetStudentsRequest.Merge(m, src)
+}
+func (m *QueryGetStudentsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetStudentsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetStudentsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetStudentsRequest proto.InternalMessageInfo
+
+// QueryGetStudentsResponse returns all students.
+type QueryGetStudentsResponse struct {
+	Students []*Student `protobuf:"bytes,1,rep,name=students,proto3" json:"students,omitempty"`
+}
+
+func (m *QueryGetStudentsResponse) Reset()         { *m = QueryGetStudentsResponse{} }
+func (m *QueryGetStudentsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetStudentsResponse) ProtoMessage()    {}
+func (*QueryGetStudentsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b582db7b6994176a, []int{8}
+}
+func (m *QueryGetStudentsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetStudentsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetStudentsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetStudentsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetStudentsResponse.Merge(m, src)
+}
+func (m *QueryGetStudentsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetStudentsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetStudentsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetStudentsResponse proto.InternalMessageInfo
+
+func (m *QueryGetStudentsResponse) GetStudents() []*Student {
+	if m != nil {
+		return m.Students
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Student)(nil), "lb.rps.v1.Student")
 	proto.RegisterType((*MsgCreateStudent)(nil), "lb.rps.v1.MsgCreateStudent")
+	proto.RegisterType((*MsgDeleteStudent)(nil), "lb.rps.v1.MsgDeleteStudent")
+	proto.RegisterType((*MsgCreateStudentResponse)(nil), "lb.rps.v1.MsgCreateStudentResponse")
+	proto.RegisterType((*MsgDeleteStudentResponse)(nil), "lb.rps.v1.MsgDeleteStudentResponse")
+	proto.RegisterType((*QueryGetStudentRequest)(nil), "lb.rps.v1.QueryGetStudentRequest")
+	proto.RegisterType((*QueryGetStudentResponse)(nil), "lb.rps.v1.QueryGetStudentResponse")
+	proto.RegisterType((*QueryGetStudentsRequest)(nil), "lb.rps.v1.QueryGetStudentsRequest")
+	proto.RegisterType((*QueryGetStudentsResponse)(nil), "lb.rps.v1.QueryGetStudentsResponse")
 }
 
 func init() { proto.RegisterFile("lb/rps/v1/types.proto", fileDescriptor_b582db7b6994176a) }
 
 var fileDescriptor_b582db7b6994176a = []byte{
-	// 260 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcd, 0x49, 0xd2, 0x2f,
-	0x2a, 0x28, 0xd6, 0x2f, 0x33, 0xd4, 0x2f, 0xa9, 0x2c, 0x48, 0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f,
-	0xc9, 0x17, 0xe2, 0xcc, 0x49, 0xd2, 0x2b, 0x2a, 0x28, 0xd6, 0x2b, 0x33, 0x94, 0x92, 0x4c, 0xce,
-	0x2f, 0xce, 0xcd, 0x2f, 0x8e, 0x07, 0x4b, 0xe8, 0x43, 0x38, 0x10, 0x55, 0x4a, 0x15, 0x5c, 0xec,
-	0xc1, 0x25, 0xa5, 0x29, 0xa9, 0x79, 0x25, 0x42, 0x42, 0x5c, 0x2c, 0x79, 0x89, 0xb9, 0xa9, 0x12,
-	0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x60, 0xb6, 0x90, 0x06, 0x17, 0x53, 0x66, 0x8a, 0x04, 0x13,
-	0x48, 0xc4, 0x49, 0xe2, 0xd2, 0x16, 0x5d, 0x11, 0xa8, 0x66, 0xc7, 0x94, 0x94, 0xa2, 0xd4, 0xe2,
-	0xe2, 0xe0, 0x92, 0xa2, 0xcc, 0xbc, 0xf4, 0x20, 0xa6, 0xcc, 0x14, 0x21, 0x01, 0x2e, 0xe6, 0xc4,
-	0xf4, 0x54, 0x09, 0x66, 0x05, 0x46, 0x0d, 0x96, 0x20, 0x10, 0x53, 0x48, 0x96, 0x8b, 0x2b, 0xb9,
-	0x28, 0x35, 0xb1, 0x24, 0x35, 0x25, 0x3e, 0xb1, 0x44, 0x82, 0x45, 0x81, 0x51, 0x83, 0x39, 0x88,
-	0x13, 0x2a, 0xe2, 0x58, 0xa2, 0x14, 0xc4, 0x25, 0xe0, 0x5b, 0x9c, 0xee, 0x0c, 0xe6, 0xc3, 0x9c,
-	0x20, 0xc1, 0xc5, 0x0e, 0x56, 0x90, 0x5f, 0x04, 0x75, 0x05, 0x8c, 0x0b, 0x77, 0x1c, 0x13, 0x92,
-	0xe3, 0x30, 0xac, 0x74, 0xd2, 0x3f, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f,
-	0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28,
-	0xd1, 0xe4, 0x8c, 0xc4, 0x9c, 0x9c, 0xd4, 0xbc, 0xf4, 0x54, 0xfd, 0x0a, 0x70, 0x68, 0x81, 0x83,
-	0x2a, 0x89, 0x0d, 0x1c, 0x0a, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xcf, 0x3a, 0x7c, 0x8a,
-	0x44, 0x01, 0x00, 0x00,
+	// 453 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
+	0x18, 0xcc, 0xc6, 0x81, 0x90, 0xaf, 0x2a, 0xaa, 0x56, 0xfc, 0x6c, 0x5d, 0x61, 0x19, 0x73, 0xf1,
+	0x01, 0x6c, 0x35, 0x88, 0x13, 0xa7, 0x16, 0xa4, 0x4a, 0x48, 0x3d, 0xc4, 0x91, 0x7a, 0xe0, 0x52,
+	0x39, 0xf1, 0x27, 0x13, 0xc9, 0xb5, 0xcd, 0xee, 0xa6, 0x6a, 0xdf, 0x82, 0xf7, 0xe0, 0xda, 0x87,
+	0xe0, 0x58, 0x71, 0xe2, 0x88, 0x92, 0x17, 0x41, 0x59, 0xaf, 0x8d, 0x7f, 0xda, 0xa8, 0x17, 0xcb,
+	0xbb, 0x33, 0xdf, 0xcc, 0xec, 0x8e, 0x16, 0x9e, 0x27, 0x33, 0x9f, 0xe7, 0xc2, 0xbf, 0x3c, 0xf4,
+	0xe5, 0x75, 0x8e, 0xc2, 0xcb, 0x79, 0x26, 0x33, 0x3a, 0x4a, 0x66, 0x1e, 0xcf, 0x85, 0x77, 0x79,
+	0x68, 0xee, 0xcf, 0x33, 0x71, 0x91, 0x89, 0x73, 0x05, 0xf8, 0xc5, 0xa2, 0x60, 0x39, 0x57, 0x30,
+	0x9c, 0xca, 0x65, 0x84, 0xa9, 0xa4, 0x14, 0x06, 0x69, 0x78, 0x81, 0x8c, 0xd8, 0xc4, 0x1d, 0x05,
+	0xea, 0x9f, 0xba, 0xd0, 0x5f, 0x44, 0xac, 0xbf, 0xd9, 0x39, 0x66, 0xbf, 0x6f, 0xde, 0x3d, 0xd3,
+	0xc3, 0x47, 0x51, 0xc4, 0x51, 0x88, 0xa9, 0xe4, 0x8b, 0x34, 0x0e, 0xfa, 0x8b, 0x88, 0xee, 0x81,
+	0x11, 0xc6, 0xc8, 0x0c, 0x9b, 0xb8, 0x83, 0x60, 0xf3, 0x4b, 0x5f, 0x01, 0xcc, 0x39, 0x86, 0x12,
+	0xa3, 0xf3, 0x50, 0xb2, 0x81, 0x4d, 0x5c, 0x23, 0x18, 0xe9, 0x9d, 0x23, 0xe9, 0x04, 0xb0, 0x77,
+	0x2a, 0xe2, 0x4f, 0x6a, 0x5d, 0x46, 0x60, 0x30, 0x54, 0x84, 0x8c, 0xeb, 0x14, 0xe5, 0xb2, 0x0a,
+	0xd7, 0xaf, 0x85, 0xeb, 0x58, 0x3a, 0x67, 0x4a, 0xf3, 0x33, 0x26, 0xf8, 0x10, 0xcd, 0x07, 0x1f,
+	0xce, 0x31, 0x81, 0xb5, 0xb3, 0x06, 0x28, 0xf2, 0x2c, 0x15, 0xa8, 0xb1, 0x86, 0x67, 0x85, 0xb9,
+	0xf0, 0x62, 0xb2, 0x44, 0x7e, 0x7d, 0x82, 0xb2, 0x82, 0xbe, 0x2f, 0x51, 0x48, 0xfa, 0x54, 0x79,
+	0x17, 0x81, 0x36, 0x0e, 0x27, 0xf0, 0xb2, 0xc3, 0x2c, 0x44, 0xe8, 0x5b, 0x18, 0x8a, 0x62, 0x4b,
+	0xf1, 0x77, 0xc6, 0xd4, 0xab, 0xaa, 0xf5, 0x4a, 0x72, 0x49, 0x71, 0xf6, 0x3b, 0x42, 0x42, 0x7b,
+	0x3a, 0x5f, 0x80, 0x75, 0x21, 0x6d, 0xe2, 0xc1, 0x13, 0xad, 0x20, 0x18, 0xb1, 0x8d, 0x7b, 0x5c,
+	0x2a, 0xce, 0xf8, 0x27, 0x01, 0xe3, 0x54, 0xc4, 0x74, 0x02, 0xbb, 0xcd, 0x0a, 0x0f, 0x6a, 0x63,
+	0xed, 0x3b, 0x33, 0xdf, 0x6c, 0x01, 0xab, 0x28, 0x13, 0xd8, 0x6d, 0x36, 0xd8, 0x92, 0x6c, 0x80,
+	0x6d, 0xc9, 0x3b, 0x7b, 0x18, 0xdf, 0x10, 0x78, 0xa4, 0x8e, 0x4e, 0xa7, 0x00, 0xff, 0x8f, 0x4f,
+	0x5f, 0xd7, 0x86, 0xef, 0x2e, 0xca, 0x74, 0xb6, 0x51, 0x74, 0xe2, 0x33, 0xd8, 0xa9, 0xdd, 0x29,
+	0xdd, 0x32, 0x52, 0x76, 0xd1, 0x88, 0x7d, 0x5f, 0x29, 0xc7, 0x1f, 0x7e, 0xad, 0x2c, 0x72, 0xbb,
+	0xb2, 0xc8, 0xdf, 0x95, 0x45, 0x7e, 0xac, 0xad, 0xde, 0xed, 0xda, 0xea, 0xfd, 0x59, 0x5b, 0xbd,
+	0xaf, 0x07, 0xf3, 0x6f, 0x61, 0x92, 0x60, 0x1a, 0xa3, 0x7f, 0xa5, 0x1e, 0xbf, 0x7a, 0xf9, 0x1f,
+	0xd5, 0x77, 0xf6, 0x58, 0x3d, 0xed, 0xf7, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0xbd, 0x57, 0xa2,
+	0x44, 0x19, 0x04, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// MsgClient is the client API for Msg service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type MsgClient interface {
+	// CreateStudent creates a new student.
+	CreateStudent(ctx context.Context, in *MsgCreateStudent, opts ...grpc.CallOption) (*MsgCreateStudentResponse, error)
+	// DeleteStudent removes a student by ID.
+	DeleteStudent(ctx context.Context, in *MsgDeleteStudent, opts ...grpc.CallOption) (*MsgDeleteStudentResponse, error)
+}
+
+type msgClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewMsgClient(cc grpc1.ClientConn) MsgClient {
+	return &msgClient{cc}
+}
+
+func (c *msgClient) CreateStudent(ctx context.Context, in *MsgCreateStudent, opts ...grpc.CallOption) (*MsgCreateStudentResponse, error) {
+	out := new(MsgCreateStudentResponse)
+	err := c.cc.Invoke(ctx, "/lb.rps.v1.Msg/CreateStudent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) DeleteStudent(ctx context.Context, in *MsgDeleteStudent, opts ...grpc.CallOption) (*MsgDeleteStudentResponse, error) {
+	out := new(MsgDeleteStudentResponse)
+	err := c.cc.Invoke(ctx, "/lb.rps.v1.Msg/DeleteStudent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MsgServer is the server API for Msg service.
+type MsgServer interface {
+	// CreateStudent creates a new student.
+	CreateStudent(context.Context, *MsgCreateStudent) (*MsgCreateStudentResponse, error)
+	// DeleteStudent removes a student by ID.
+	DeleteStudent(context.Context, *MsgDeleteStudent) (*MsgDeleteStudentResponse, error)
+}
+
+// UnimplementedMsgServer can be embedded to have forward compatible implementations.
+type UnimplementedMsgServer struct {
+}
+
+func (*UnimplementedMsgServer) CreateStudent(ctx context.Context, req *MsgCreateStudent) (*MsgCreateStudentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateStudent not implemented")
+}
+func (*UnimplementedMsgServer) DeleteStudent(ctx context.Context, req *MsgDeleteStudent) (*MsgDeleteStudentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteStudent not implemented")
+}
+
+func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
+	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_CreateStudent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateStudent)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateStudent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lb.rps.v1.Msg/CreateStudent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateStudent(ctx, req.(*MsgCreateStudent))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_DeleteStudent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteStudent)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DeleteStudent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lb.rps.v1.Msg/DeleteStudent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DeleteStudent(ctx, req.(*MsgDeleteStudent))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var Msg_serviceDesc = _Msg_serviceDesc
+var _Msg_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "lb.rps.v1.Msg",
+	HandlerType: (*MsgServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateStudent",
+			Handler:    _Msg_CreateStudent_Handler,
+		},
+		{
+			MethodName: "DeleteStudent",
+			Handler:    _Msg_DeleteStudent_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lb/rps/v1/types.proto",
+}
+
+// QueryClient is the client API for Query service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type QueryClient interface {
+	// GetStudent returns a student by ID.
+	GetStudent(ctx context.Context, in *QueryGetStudentRequest, opts ...grpc.CallOption) (*QueryGetStudentResponse, error)
+	// GetStudents returns all students.
+	GetStudents(ctx context.Context, in *QueryGetStudentsRequest, opts ...grpc.CallOption) (*QueryGetStudentsResponse, error)
+}
+
+type queryClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewQueryClient(cc grpc1.ClientConn) QueryClient {
+	return &queryClient{cc}
+}
+
+func (c *queryClient) GetStudent(ctx context.Context, in *QueryGetStudentRequest, opts ...grpc.CallOption) (*QueryGetStudentResponse, error) {
+	out := new(QueryGetStudentResponse)
+	err := c.cc.Invoke(ctx, "/lb.rps.v1.Query/GetStudent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GetStudents(ctx context.Context, in *QueryGetStudentsRequest, opts ...grpc.CallOption) (*QueryGetStudentsResponse, error) {
+	out := new(QueryGetStudentsResponse)
+	err := c.cc.Invoke(ctx, "/lb.rps.v1.Query/GetStudents", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// QueryServer is the server API for Query service.
+type QueryServer interface {
+	// GetStudent returns a student by ID.
+	GetStudent(context.Context, *QueryGetStudentRequest) (*QueryGetStudentResponse, error)
+	// GetStudents returns all students.
+	GetStudents(context.Context, *QueryGetStudentsRequest) (*QueryGetStudentsResponse, error)
+}
+
+// UnimplementedQueryServer can be embedded to have forward compatible implementations.
+type UnimplementedQueryServer struct {
+}
+
+func (*UnimplementedQueryServer) GetStudent(ctx context.Context, req *QueryGetStudentRequest) (*QueryGetStudentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStudent not implemented")
+}
+func (*UnimplementedQueryServer) GetStudents(ctx context.Context, req *QueryGetStudentsRequest) (*QueryGetStudentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStudents not implemented")
+}
+
+func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
+	s.RegisterService(&_Query_serviceDesc, srv)
+}
+
+func _Query_GetStudent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetStudentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetStudent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lb.rps.v1.Query/GetStudent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetStudent(ctx, req.(*QueryGetStudentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GetStudents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetStudentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetStudents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lb.rps.v1.Query/GetStudents",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetStudents(ctx, req.(*QueryGetStudentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var Query_serviceDesc = _Query_serviceDesc
+var _Query_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "lb.rps.v1.Query",
+	HandlerType: (*QueryServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetStudent",
+			Handler:    _Query_GetStudent_Handler,
+		},
+		{
+			MethodName: "GetStudents",
+			Handler:    _Query_GetStudents_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lb/rps/v1/types.proto",
 }
 
 func (m *Student) Marshal() (dAtA []byte, err error) {
@@ -269,6 +827,214 @@ func (m *MsgCreateStudent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgDeleteStudent) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteStudent) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteStudent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCreateStudentResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateStudentResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateStudentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteStudentResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteStudentResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteStudentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetStudentRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetStudentRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetStudentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetStudentResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetStudentResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetStudentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Student != nil {
+		{
+			size, err := m.Student.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTypes(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetStudentsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetStudentsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetStudentsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetStudentsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetStudentsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetStudentsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Students) > 0 {
+		for iNdEx := len(m.Students) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Students[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTypes(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTypes(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTypes(v)
 	base := offset
@@ -319,6 +1085,91 @@ func (m *MsgCreateStudent) Size() (n int) {
 	}
 	if m.Age != 0 {
 		n += 1 + sovTypes(uint64(m.Age))
+	}
+	return n
+}
+
+func (m *MsgDeleteStudent) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgCreateStudentResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgDeleteStudentResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryGetStudentRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetStudentResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Student != nil {
+		l = m.Student.Size()
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetStudentsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryGetStudentsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Students) > 0 {
+		for _, e := range m.Students {
+			l = e.Size()
+			n += 1 + l + sovTypes(uint64(l))
+		}
 	}
 	return n
 }
@@ -593,6 +1444,522 @@ func (m *MsgCreateStudent) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDeleteStudent) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDeleteStudent: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDeleteStudent: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateStudentResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateStudentResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateStudentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDeleteStudentResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDeleteStudentResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDeleteStudentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetStudentRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetStudentRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetStudentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetStudentResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetStudentResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetStudentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Student", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Student == nil {
+				m.Student = &Student{}
+			}
+			if err := m.Student.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetStudentsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetStudentsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetStudentsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetStudentsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetStudentsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetStudentsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Students", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Students = append(m.Students, &Student{})
+			if err := m.Students[len(m.Students)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTypes(dAtA[iNdEx:])

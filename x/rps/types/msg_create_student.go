@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgCreateStudent = "create_student"
@@ -30,13 +31,13 @@ func (msg *MsgCreateStudent) GetSigners() []sdk.AccAddress {
 
 func (msg *MsgCreateStudent) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
-		return sdkerrors.Wrap(err, "invalid creator address")
+		return sdkerrors.ErrInvalidRequest.Wrap("invalid creator address: " + err.Error())
 	}
 	if msg.Name == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "name cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
 	}
 	if msg.Age == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "age must be greater than zero")
+		return sdkerrors.ErrInvalidRequest.Wrap("age must be greater than zero")
 	}
 	return nil
 }
