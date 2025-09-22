@@ -7,9 +7,13 @@ plugins:
     out: ..
     opt: logtostderr=true,allow_colon_final_segments=true
   - name: go
-    out: gen/go
-    opt: paths=source_relative
+    out: ..
+    opt:
+      - paths=source_relative
+      - Mcosmos/app/v1alpha1/module.proto=cosmossdk.io/api/cosmos/app/v1alpha1
   - name: go-grpc
-    out: gen/go
-    opt: paths=source_relative
+    out: ..
+    opt:
+      - paths=source_relative
+      - Mcosmos/app/v1alpha1/module.proto=cosmossdk.io/api/cosmos/app/v1alpha1
 

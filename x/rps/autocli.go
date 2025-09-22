@@ -24,10 +24,10 @@ import (
 func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 	return &autocliv1.ModuleOptions{
 		Tx: &autocliv1.ServiceCommandDescriptor{
-			Service: types.MsgServiceDesc.ServiceName,
+			Service: types.Msg_serviceDesc.ServiceName,
 		},
 		Query: &autocliv1.ServiceCommandDescriptor{
-			Service: types.QueryServiceDesc.ServiceName,
+			Service: types.Query_serviceDesc.ServiceName,
 		},
 	}
 }

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package lb.rps.module.v1;
 
+option go_package = "challenge/x/rps/module/v1;modulev1";
+
 import "cosmos/app/v1alpha1/module.proto";
 
 // Module is the app config object of the module rps.
