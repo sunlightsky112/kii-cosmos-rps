@@ -25,3 +25,4 @@ cp -r challenge/* ./
 rm -rf api && mkdir api
 mv lb/* ./api
 rm -rf challenge lb
+rm -f ./api/rps/module/v1/module.pb.go
